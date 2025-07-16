@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
-    List<Employee> findByOffice_OfficeCode(String officeCode);
+public interface EmployeeRepository extends JpaRepository<Employee, String> {
+    List<Employee> findByOffice_Id(String officeId);
     List<Employee> findByJobTitle(String jobTitle);
-    List<Employee> findByReportsTo_EmployeeNumber(Integer employeeNumber);
+    List<Employee> findByReportsTo_Id(String managerId);
 }

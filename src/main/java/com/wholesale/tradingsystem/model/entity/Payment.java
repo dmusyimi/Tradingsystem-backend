@@ -2,8 +2,9 @@ package com.wholesale.tradingsystem.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -25,11 +26,13 @@ import java.time.LocalDate;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "customerNumber")
+    @JoinColumn(name = "customerId")
     private Customer customer;
 
     @NotBlank

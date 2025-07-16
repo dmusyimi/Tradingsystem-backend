@@ -2,8 +2,9 @@ package com.wholesale.tradingsystem.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -26,10 +27,10 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Integer customerNumber;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @NotBlank
     private String customerName;
@@ -59,7 +60,7 @@ public class Customer {
     private String country;
 
     @ManyToOne
-    @JoinColumn(name = "salesRepEmployeeNumber")
+    @JoinColumn(name = "salesRepEmployeeId")
     private Employee salesRepEmployee;
 
     private BigDecimal creditLimit;

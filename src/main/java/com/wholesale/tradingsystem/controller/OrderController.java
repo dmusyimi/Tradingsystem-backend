@@ -28,9 +28,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @GetMapping("/{orderNumber}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer orderNumber) {
-        return ResponseEntity.ok(orderService.getOrderById(orderNumber));
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable String id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @PostMapping
@@ -38,22 +38,22 @@ public class OrderController {
         return new ResponseEntity<>(orderService.createOrder(orderDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{orderNumber}")
+    @PutMapping("/{id}")
     public ResponseEntity<OrderDTO> updateOrder(
-            @PathVariable Integer orderNumber,
+            @PathVariable String id,
             @Validated @RequestBody OrderDTO orderDTO) {
-        return ResponseEntity.ok(orderService.updateOrder(orderNumber, orderDTO));
+        return ResponseEntity.ok(orderService.updateOrder(id, orderDTO));
     }
 
-    @DeleteMapping("/{orderNumber}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Integer orderNumber) {
-        orderService.deleteOrder(orderNumber);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
+        orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/customer/{customerNumber}")
-    public ResponseEntity<List<OrderDTO>> getOrdersByCustomer(@PathVariable Integer customerNumber) {
-        return ResponseEntity.ok(orderService.getOrdersByCustomer(customerNumber));
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<OrderDTO>> getOrdersByCustomer(@PathVariable String customerId) {
+        return ResponseEntity.ok(orderService.getOrdersByCustomer(customerId));
     }
 
     @GetMapping("/status/{status}")

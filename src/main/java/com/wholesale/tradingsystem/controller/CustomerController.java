@@ -26,9 +26,9 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getAllCustomers());
     }
 
-    @GetMapping("/{customerNumber}")
-    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Integer customerNumber) {
-        return ResponseEntity.ok(customerService.getCustomerById(customerNumber));
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable String id) {
+        return ResponseEntity.ok(customerService.getCustomerById(id));
     }
 
     @PostMapping
@@ -37,16 +37,16 @@ public class CustomerController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{customerNumber}")
+    @PutMapping("/{id}")
     public ResponseEntity<CustomerDTO> updateCustomer(
-            @PathVariable Integer customerNumber,
+            @PathVariable String id,
             @Validated @RequestBody CustomerDTO customerDTO) {
-        return ResponseEntity.ok(customerService.updateCustomer(customerNumber, customerDTO));
+        return ResponseEntity.ok(customerService.updateCustomer(id, customerDTO));
     }
 
-    @DeleteMapping("/{customerNumber}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer customerNumber) {
-        customerService.deleteCustomer(customerNumber);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable String id) {
+        customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -55,8 +55,8 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getCustomersByCountry(country));
     }
 
-    @GetMapping("/salesRep/{employeeNumber}")
-    public ResponseEntity<List<CustomerDTO>> getCustomersBySalesRep(@PathVariable Integer employeeNumber) {
-        return ResponseEntity.ok(customerService.getCustomersBySalesRep(employeeNumber));
+    @GetMapping("/salesRep/{id}")
+    public ResponseEntity<List<CustomerDTO>> getCustomersBySalesRep(@PathVariable String id) {
+        return ResponseEntity.ok(customerService.getCustomersBySalesRep(id));
     }
 }

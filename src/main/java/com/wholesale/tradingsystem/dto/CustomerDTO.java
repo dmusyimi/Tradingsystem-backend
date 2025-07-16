@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-    private Integer customerNumber;
+    private String id;
     private String customerName;
     private String contactFirstName;
     private String contactLastName;
@@ -21,6 +21,6 @@ public class CustomerDTO {
     private String state;
     private String postalCode;
     private String country;
-    private Integer salesRepEmployeeNumber;
+    private String salesRepEmployeeId;
     private BigDecimal creditLimit;
 }

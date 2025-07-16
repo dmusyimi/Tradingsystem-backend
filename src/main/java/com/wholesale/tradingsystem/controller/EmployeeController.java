@@ -26,9 +26,9 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
-    @GetMapping("/{employeeNumber}")
-    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Integer employeeNumber) {
-        return ResponseEntity.ok(employeeService.getEmployeeById(employeeNumber));
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable String id) {
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
     @PostMapping
@@ -36,22 +36,22 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.createEmployee(employeeDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{employeeNumber}")
+    @PutMapping("/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee(
-            @PathVariable Integer employeeNumber,
+            @PathVariable String id,
             @Validated @RequestBody EmployeeDTO employeeDTO) {
-        return ResponseEntity.ok(employeeService.updateEmployee(employeeNumber, employeeDTO));
+        return ResponseEntity.ok(employeeService.updateEmployee(id, employeeDTO));
     }
 
-    @DeleteMapping("/{employeeNumber}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeNumber) {
-        employeeService.deleteEmployee(employeeNumber);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable String id) {
+        employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/office/{officeCode}")
-    public ResponseEntity<List<EmployeeDTO>> getEmployeesByOffice(@PathVariable String officeCode) {
-        return ResponseEntity.ok(employeeService.getEmployeesByOffice(officeCode));
+    @GetMapping("/office/{officeId}")
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByOffice(@PathVariable String officeId) {
+        return ResponseEntity.ok(employeeService.getEmployeesByOffice(officeId));
     }
 
     @GetMapping("/job-title/{jobTitle}")
@@ -59,8 +59,8 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getEmployeesByJobTitle(jobTitle));
     }
 
-    @GetMapping("/manager/{managerEmployeeNumber}")
-    public ResponseEntity<List<EmployeeDTO>> getEmployeesByManager(@PathVariable Integer managerEmployeeNumber) {
-        return ResponseEntity.ok(employeeService.getEmployeesByManager(managerEmployeeNumber));
+    @GetMapping("/manager/{managerId}")
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByManager(@PathVariable String managerId) {
+        return ResponseEntity.ok(employeeService.getEmployeesByManager(managerId));
     }
 }

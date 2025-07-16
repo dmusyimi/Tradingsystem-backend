@@ -29,10 +29,10 @@ public class OfficeService {
                 .collect(Collectors.toList());
     }
 
-    public OfficeDTO getOfficeById(String officeCode) {
-        return officeRepository.findById(officeCode)
+    public OfficeDTO getOfficeById(String id) {
+        return officeRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new EmptyResultDataAccessException("Office not found with code: " + officeCode, 1));
+                .orElseThrow(() -> new EmptyResultDataAccessException("Office not found with id: " + id, 1));
     }
 
     @Transactional
@@ -43,23 +43,23 @@ public class OfficeService {
     }
 
     @Transactional
-    public OfficeDTO updateOffice(String officeCode, OfficeDTO officeDTO) {
-        if (!officeRepository.existsById(officeCode)) {
-            throw new EntityNotFoundException("Office not found with code: " + officeCode);
+    public OfficeDTO updateOffice(String id, OfficeDTO officeDTO) {
+        if (!officeRepository.existsById(id)) {
+            throw new EntityNotFoundException("Office not found with id: " + id);
         }
 
         Office office = convertToEntity(officeDTO);
-        office.setOfficeCode(officeCode); // ensure we update the existing entity
+        office.setId(id); // ensure we update the existing entity
         Office updatedOffice = officeRepository.save(office);
         return convertToDTO(updatedOffice);
     }
 
     @Transactional
-    public void deleteOffice(String officeCode) {
-        if (!officeRepository.existsById(officeCode)) {
-            throw new EmptyResultDataAccessException("Office not found with code: " + officeCode, 1);
+    public void deleteOffice(String id) {
+        if (!officeRepository.existsById(id)) {
+            throw new EmptyResultDataAccessException("Office not found with id: " + id, 1);
         }
-        officeRepository.deleteById(officeCode);
+        officeRepository.deleteById(id);
     }
 
     public List<OfficeDTO> getOfficesByCountry(String country) {
@@ -78,7 +78,7 @@ public class OfficeService {
 
     private OfficeDTO convertToDTO(Office office) {
         OfficeDTO dto = new OfficeDTO();
-        dto.setOfficeCode(office.getOfficeCode());
+        dto.setId(office.getId());
         dto.setCity(office.getCity());
         dto.setPhone(office.getPhone());
         dto.setAddressLine1(office.getAddressLine1());
@@ -92,7 +92,6 @@ public class OfficeService {
 
     private Office convertToEntity(OfficeDTO dto) {
         Office entity = new Office();
-        entity.setOfficeCode(dto.getOfficeCode());
         entity.setCity(dto.getCity());
         entity.setPhone(dto.getPhone());
         entity.setAddressLine1(dto.getAddressLine1());

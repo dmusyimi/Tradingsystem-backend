@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeDTO {
-    private Integer employeeNumber;
+    private String id;
     private String firstName;
     private String lastName;
     private String extension;
     private String email;
     private String jobTitle;
-    private Integer reportsTo;
-    private String officeCode;
+    private String reportsToId;
+    private String officeId;
 }

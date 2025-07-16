@@ -26,9 +26,9 @@ public class OfficeController {
         return ResponseEntity.ok(officeService.getAllOffices());
     }
 
-    @GetMapping("/{officeCode}")
-    public ResponseEntity<OfficeDTO> getOfficeById(@PathVariable String officeCode) {
-        return ResponseEntity.ok(officeService.getOfficeById(officeCode));
+    @GetMapping("/{id}")
+    public ResponseEntity<OfficeDTO> getOfficeById(@PathVariable String id) {
+        return ResponseEntity.ok(officeService.getOfficeById(id));
     }
 
     @PostMapping
@@ -36,16 +36,16 @@ public class OfficeController {
         return new ResponseEntity<>(officeService.createOffice(officeDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{officeCode}")
+    @PutMapping("/{id}")
     public ResponseEntity<OfficeDTO> updateOffice(
-            @PathVariable String officeCode,
+            @PathVariable String id,
             @Validated @RequestBody OfficeDTO officeDTO) {
-        return ResponseEntity.ok(officeService.updateOffice(officeCode, officeDTO));
+        return ResponseEntity.ok(officeService.updateOffice(id, officeDTO));
     }
 
-    @DeleteMapping("/{officeCode}")
-    public ResponseEntity<Void> deleteOffice(@PathVariable String officeCode) {
-        officeService.deleteOffice(officeCode);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOffice(@PathVariable String id) {
+        officeService.deleteOffice(id);
         return ResponseEntity.noContent().build();
     }
 

@@ -33,10 +33,10 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
 
-    public CustomerDTO getCustomerById(Integer customerNumber) {
-        return customerRepository.findById(customerNumber)
+    public CustomerDTO getCustomerById(String id) {
+        return customerRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new EmptyResultDataAccessException("Customer not found with number: " + customerNumber, 1));
+                .orElseThrow(() -> new EmptyResultDataAccessException("Customer not found with id: " + id, 1));
     }
 
     @Transactional
@@ -47,23 +47,23 @@ public class CustomerService {
     }
 
     @Transactional
-    public CustomerDTO updateCustomer(Integer customerNumber, CustomerDTO customerDTO) {
-        if (!customerRepository.existsById(customerNumber)) {
-            throw new EntityNotFoundException("Customer not found with number: " + customerNumber);
+    public CustomerDTO updateCustomer(String id, CustomerDTO customerDTO) {
+        if (!customerRepository.existsById(id)) {
+            throw new EntityNotFoundException("Customer not found with id: " + id);
         }
 
         Customer customer = convertToEntity(customerDTO);
-        customer.setCustomerNumber(customerNumber); // ensure we update the existing entity
+        customer.setId(id); // ensure we update the existing entity
         Customer updatedCustomer = customerRepository.save(customer);
         return convertToDTO(updatedCustomer);
     }
 
     @Transactional
-    public void deleteCustomer(Integer customerNumber) {
-        if (!customerRepository.existsById(customerNumber)) {
-            throw new EntityNotFoundException("Customer not found with number: " + customerNumber);
+    public void deleteCustomer(String id) {
+        if (!customerRepository.existsById(id)) {
+            throw new EntityNotFoundException("Customer not found with id: " + id);
         }
-        customerRepository.deleteById(customerNumber);
+        customerRepository.deleteById(id);
     }
 
     public List<CustomerDTO> getCustomersByCountry(String country) {
@@ -73,8 +73,8 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
 
-    public List<CustomerDTO> getCustomersBySalesRep(Integer employeeNumber) {
-        return customerRepository.findBySalesRepEmployee_EmployeeNumber(employeeNumber)
+    public List<CustomerDTO> getCustomersBySalesRep(String employeeId) {
+        return customerRepository.findBySalesRepEmployee_Id(employeeId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -82,7 +82,7 @@ public class CustomerService {
 
     private CustomerDTO convertToDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
-        dto.setCustomerNumber(customer.getCustomerNumber());
+        dto.setId(customer.getId());
         dto.setCustomerName(customer.getCustomerName());
         dto.setContactFirstName(customer.getContactFirstName());
         dto.setContactLastName(customer.getContactLastName());
@@ -95,7 +95,7 @@ public class CustomerService {
         dto.setCountry(customer.getCountry());
 
         if (customer.getSalesRepEmployee() != null) {
-            dto.setSalesRepEmployeeNumber(customer.getSalesRepEmployee().getEmployeeNumber());
+            dto.setSalesRepEmployeeId(customer.getSalesRepEmployee().getId());
         }
 
         dto.setCreditLimit(customer.getCreditLimit());
@@ -104,7 +104,6 @@ public class CustomerService {
 
     private Customer convertToEntity(CustomerDTO dto) {
         Customer entity = new Customer();
-        entity.setCustomerNumber(dto.getCustomerNumber());
         entity.setCustomerName(dto.getCustomerName());
         entity.setContactFirstName(dto.getContactFirstName());
         entity.setContactLastName(dto.getContactLastName());
@@ -117,9 +116,9 @@ public class CustomerService {
         entity.setCountry(dto.getCountry());
 
         // Set sales rep employee if provided
-        if (dto.getSalesRepEmployeeNumber() != null) {
-            Employee salesRep = employeeRepository.findById(dto.getSalesRepEmployeeNumber())
-                    .orElseThrow(() -> new EmptyResultDataAccessException("Employee not found with number: " + dto.getSalesRepEmployeeNumber(), 1));
+        if (dto.getSalesRepEmployeeId() != null) {
+            Employee salesRep = employeeRepository.findById(dto.getSalesRepEmployeeId())
+                    .orElseThrow(() -> new EmptyResultDataAccessException("Employee not found with id: " + dto.getSalesRepEmployeeId(), 1));
             entity.setSalesRepEmployee(salesRep);
         }
 

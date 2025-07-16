@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OfficeDTO {
-    private String officeCode;
+    private String id;
     private String city;
     private String phone;
     private String addressLine1;

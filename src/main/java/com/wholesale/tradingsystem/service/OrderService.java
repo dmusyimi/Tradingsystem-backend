@@ -28,7 +28,7 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, CustomerRepository customerRepository, 
+    public OrderService(OrderRepository orderRepository, CustomerRepository customerRepository,
                         ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
@@ -42,10 +42,10 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public OrderDTO getOrderById(Integer orderNumber) {
-        return orderRepository.findById(orderNumber)
+    public OrderDTO getOrderById(String id) {
+        return orderRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new EmptyResultDataAccessException("Order not found with number: " + orderNumber, 1));
+                .orElseThrow(() -> new EmptyResultDataAccessException("Order not found with id: " + id, 1));
     }
 
     @Transactional
@@ -56,27 +56,27 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDTO updateOrder(Integer orderNumber, OrderDTO orderDTO) {
-        if (!orderRepository.existsById(orderNumber)) {
-            throw new EntityNotFoundException("Order not found with number: " + orderNumber);
+    public OrderDTO updateOrder(String id, OrderDTO orderDTO) {
+        if (!orderRepository.existsById(id)) {
+            throw new EntityNotFoundException("Order not found with id: " + id);
         }
 
         Order order = convertToEntity(orderDTO);
-        order.setOrderNumber(orderNumber); // ensure we update the existing entity
+        order.setId(id); // ensure we update the existing entity
         Order updatedOrder = orderRepository.save(order);
         return convertToDTO(updatedOrder);
     }
 
     @Transactional
-    public void deleteOrder(Integer orderNumber) {
-        if (!orderRepository.existsById(orderNumber)) {
-            throw new EmptyResultDataAccessException("Order not found with number: " + orderNumber, 1);
+    public void deleteOrder(String id) {
+        if (!orderRepository.existsById(id)) {
+            throw new EmptyResultDataAccessException("Order not found with id: " + id, 1);
         }
-        orderRepository.deleteById(orderNumber);
+        orderRepository.deleteById(id);
     }
 
-    public List<OrderDTO> getOrdersByCustomer(Integer customerNumber) {
-        return orderRepository.findByCustomer_CustomerNumber(customerNumber)
+    public List<OrderDTO> getOrdersByCustomer(String customerId) {
+        return orderRepository.findByCustomer_Id(customerId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -98,13 +98,13 @@ public class OrderService {
 
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-        dto.setOrderNumber(order.getOrderNumber());
+        dto.setId(order.getId());
         dto.setOrderDate(order.getOrderDate());
         dto.setRequiredDate(order.getRequiredDate());
         dto.setShippedDate(order.getShippedDate());
         dto.setStatus(order.getStatus());
         dto.setComments(order.getComments());
-        dto.setCustomerNumber(order.getCustomer().getCustomerNumber());
+        dto.setCustomerId(order.getCustomer().getId());
 
         // Convert order details
         List<OrderDTO.OrderDetailDTO> orderDetailDTOs = new ArrayList<>();
@@ -112,10 +112,10 @@ public class OrderService {
             orderDetailDTOs = order.getOrderDetails().stream()
                     .map(detail -> {
                         OrderDTO.OrderDetailDTO detailDTO = new OrderDTO.OrderDetailDTO();
-                        detailDTO.setProductCode(detail.getProduct().getProductCode());
+                        detailDTO.setId(detail.getId());
+                        detailDTO.setProductId(detail.getProduct().getId());
                         detailDTO.setQuantityOrdered(detail.getQuantityOrdered());
                         detailDTO.setPriceEach(detail.getPriceEach().doubleValue());
-                        detailDTO.setOrderLineNumber(detail.getOrderLineNumber());
                         return detailDTO;
                     })
                     .collect(Collectors.toList());
@@ -127,16 +127,15 @@ public class OrderService {
 
     private Order convertToEntity(OrderDTO dto) {
         Order entity = new Order();
-        entity.setOrderNumber(dto.getOrderNumber());
         entity.setOrderDate(dto.getOrderDate());
         entity.setRequiredDate(dto.getRequiredDate());
         entity.setShippedDate(dto.getShippedDate());
         entity.setStatus(dto.getStatus());
         entity.setComments(dto.getComments());
 
-        // Set customer
-        Customer customer = customerRepository.findById(dto.getCustomerNumber())
-                .orElseThrow(() -> new EmptyResultDataAccessException("Customer not found with number: " + dto.getCustomerNumber(), 1));
+        // Set customer by ID
+        Customer customer = customerRepository.findById(dto.getCustomerId())
+                .orElseThrow(() -> new EmptyResultDataAccessException("Customer not found with id: " + dto.getCustomerId(), 1));
         entity.setCustomer(customer);
 
         // Set order details if present
@@ -146,14 +145,13 @@ public class OrderService {
                 OrderDetail detail = new OrderDetail();
                 detail.setOrder(entity);
 
-                // Set product
-                Product product = productRepository.findById(detailDTO.getProductCode())
-                        .orElseThrow(() -> new EmptyResultDataAccessException("Product not found with code: " + detailDTO.getProductCode(), 1));
+                // Set product by ID
+                Product product = productRepository.findById(detailDTO.getProductId())
+                        .orElseThrow(() -> new EmptyResultDataAccessException("Product not found with id: " + detailDTO.getProductId(), 1));
                 detail.setProduct(product);
 
                 detail.setQuantityOrdered(detailDTO.getQuantityOrdered());
                 detail.setPriceEach(BigDecimal.valueOf(detailDTO.getPriceEach()));
-                detail.setOrderLineNumber(detailDTO.getOrderLineNumber());
 
                 orderDetails.add(detail);
             }

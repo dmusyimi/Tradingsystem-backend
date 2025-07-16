@@ -33,10 +33,10 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public EmployeeDTO getEmployeeById(Integer employeeNumber) {
-        return employeeRepository.findById(employeeNumber)
+    public EmployeeDTO getEmployeeById(String id) {
+        return employeeRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new EmptyResultDataAccessException("Employee not found with number: " + employeeNumber, 1));
+                .orElseThrow(() -> new EmptyResultDataAccessException("Employee not found with id: " + id, 1));
     }
 
     @Transactional
@@ -47,27 +47,27 @@ public class EmployeeService {
     }
 
     @Transactional
-    public EmployeeDTO updateEmployee(Integer employeeNumber, EmployeeDTO employeeDTO) {
-        if (!employeeRepository.existsById(employeeNumber)) {
-            throw new EmptyResultDataAccessException("Employee not found with number: " + employeeNumber, 1);
+    public EmployeeDTO updateEmployee(String id, EmployeeDTO employeeDTO) {
+        if (!employeeRepository.existsById(id)) {
+            throw new EmptyResultDataAccessException("Employee not found with id: " + id, 1);
         }
 
         Employee employee = convertToEntity(employeeDTO);
-        employee.setEmployeeNumber(employeeNumber); // ensure we update the existing entity
+        employee.setId(id); // ensure we update the existing entity
         Employee updatedEmployee = employeeRepository.save(employee);
         return convertToDTO(updatedEmployee);
     }
 
     @Transactional
-    public void deleteEmployee(Integer employeeNumber) {
-        if (!employeeRepository.existsById(employeeNumber)) {
-            throw new EntityNotFoundException("Employee not found with number: " + employeeNumber);
+    public void deleteEmployee(String id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new EntityNotFoundException("Employee not found with id: " + id);
         }
-        employeeRepository.deleteById(employeeNumber);
+        employeeRepository.deleteById(id);
     }
 
-    public List<EmployeeDTO> getEmployeesByOffice(String officeCode) {
-        return employeeRepository.findByOffice_OfficeCode(officeCode)
+    public List<EmployeeDTO> getEmployeesByOffice(String officeId) {
+        return employeeRepository.findByOffice_Id(officeId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -80,8 +80,8 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public List<EmployeeDTO> getEmployeesByManager(Integer managerEmployeeNumber) {
-        return employeeRepository.findByReportsTo_EmployeeNumber(managerEmployeeNumber)
+    public List<EmployeeDTO> getEmployeesByManager(String managerId) {
+        return employeeRepository.findByReportsTo_Id(managerId)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class EmployeeService {
 
     private EmployeeDTO convertToDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
-        dto.setEmployeeNumber(employee.getEmployeeNumber());
+        dto.setId(employee.getId());
         dto.setFirstName(employee.getFirstName());
         dto.setLastName(employee.getLastName());
         dto.setExtension(employee.getExtension());
@@ -97,11 +97,11 @@ public class EmployeeService {
         dto.setJobTitle(employee.getJobTitle());
 
         if (employee.getReportsTo() != null) {
-            dto.setReportsTo(employee.getReportsTo().getEmployeeNumber());
+            dto.setReportsToId(employee.getReportsTo().getId());
         }
 
         if (employee.getOffice() != null) {
-            dto.setOfficeCode(employee.getOffice().getOfficeCode());
+            dto.setOfficeId(employee.getOffice().getId());
         }
 
         return dto;
@@ -109,7 +109,6 @@ public class EmployeeService {
 
     private Employee convertToEntity(EmployeeDTO dto) {
         Employee entity = new Employee();
-        entity.setEmployeeNumber(dto.getEmployeeNumber());
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
         entity.setExtension(dto.getExtension());
@@ -117,16 +116,16 @@ public class EmployeeService {
         entity.setJobTitle(dto.getJobTitle());
 
         // Set reporting relationship if provided
-        if (dto.getReportsTo() != null) {
-            Employee manager = employeeRepository.findById(dto.getReportsTo())
-                    .orElseThrow(() -> new EmptyResultDataAccessException("Manager not found with number: " + dto.getReportsTo(), 1));
+        if (dto.getReportsToId() != null) {
+            Employee manager = employeeRepository.findById(dto.getReportsToId())
+                    .orElseThrow(() -> new EmptyResultDataAccessException("Manager not found with id: " + dto.getReportsToId(), 1));
             entity.setReportsTo(manager);
         }
 
         // Set office if provided
-        if (dto.getOfficeCode() != null) {
-            Office office = officeRepository.findById(dto.getOfficeCode())
-                    .orElseThrow(() -> new EmptyResultDataAccessException("Office not found with code: " + dto.getOfficeCode(), 1));
+        if (dto.getOfficeId() != null) {
+            Office office = officeRepository.findById(dto.getOfficeId())
+                    .orElseThrow(() -> new EmptyResultDataAccessException("Office not found with id: " + dto.getOfficeId(), 1));
             entity.setOffice(office);
         }
 

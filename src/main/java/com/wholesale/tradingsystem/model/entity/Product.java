@@ -3,8 +3,8 @@ package com.wholesale.tradingsystem.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -27,8 +27,10 @@ import java.util.List;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @NotBlank
     private String productCode;
@@ -37,7 +39,7 @@ public class Product {
     private String productName;
 
     @ManyToOne
-    @JoinColumn(name = "productLine")
+    @JoinColumn(name = "productLineId")
     private ProductLine productLine;
 
     private String productScale;

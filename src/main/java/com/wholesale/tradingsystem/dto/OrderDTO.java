@@ -11,22 +11,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    private Integer orderNumber;
+    private String id;
     private LocalDate orderDate;
     private LocalDate requiredDate;
     private LocalDate shippedDate;
     private String status;
     private String comments;
-    private Integer customerNumber;
+    private String customerId;
     private List<OrderDetailDTO> orderDetails;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderDetailDTO {
-        private String productCode;
+        private String id;
+        private String productId;
         private Integer quantityOrdered;
         private Double priceEach;
-        private Integer orderLineNumber;
     }
 }

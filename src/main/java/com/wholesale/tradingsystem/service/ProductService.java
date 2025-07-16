@@ -33,10 +33,10 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public ProductDTO getProductById(String productCode) {
-        return productRepository.findById(productCode)
+    public ProductDTO getProductById(String id) {
+        return productRepository.findById(id)
                 .map(this::convertToDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with code: " + productCode));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
     }
 
     @Transactional
@@ -47,23 +47,23 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO updateProduct(String productCode, ProductDTO productDTO) {
-        if (!productRepository.existsById(productCode)) {
-            throw new EmptyResultDataAccessException("Product not found with code: " + productCode, 1);
+    public ProductDTO updateProduct(String id, ProductDTO productDTO) {
+        if (!productRepository.existsById(id)) {
+            throw new EmptyResultDataAccessException("Product not found with id: " + id, 1);
         }
 
         Product product = convertToEntity(productDTO);
-        product.setProductCode(productCode); // ensure we update the existing entity
+        product.setId(id); // ensure we update the existing entity
         Product updatedProduct = productRepository.save(product);
         return convertToDTO(updatedProduct);
     }
 
     @Transactional
-    public void deleteProduct(String productCode) {
-        if (!productRepository.existsById(productCode)) {
-            throw new EmptyResultDataAccessException("Product not found with code: " + productCode, 1);
+    public void deleteProduct(String id) {
+        if (!productRepository.existsById(id)) {
+            throw new EmptyResultDataAccessException("Product not found with id: " + id, 1);
         }
-        productRepository.deleteById(productCode);
+        productRepository.deleteById(id);
     }
 
     public List<ProductDTO> getProductsByProductLine(String productLine) {
@@ -75,9 +75,10 @@ public class ProductService {
 
     private ProductDTO convertToDTO(Product product) {
         ProductDTO dto = new ProductDTO();
+        dto.setId(product.getId());
         dto.setProductCode(product.getProductCode());
         dto.setProductName(product.getProductName());
-        dto.setProductLine(product.getProductLine().getProductLine());
+        dto.setProductLineId(product.getProductLine().getId());
         dto.setProductScale(product.getProductScale());
         dto.setProductVendor(product.getProductVendor());
         dto.setProductDescription(product.getProductDescription());
@@ -89,12 +90,15 @@ public class ProductService {
 
     private Product convertToEntity(ProductDTO dto) {
         Product entity = new Product();
+        if (dto.getId() != null) {
+            entity.setId(dto.getId());
+        }
         entity.setProductCode(dto.getProductCode());
         entity.setProductName(dto.getProductName());
 
-        // Find and set the product line
-        ProductLine productLine = productLineRepository.findById(dto.getProductLine())
-                .orElseThrow(() -> new EmptyResultDataAccessException("ProductLine not found: " + dto.getProductLine(), 1));
+        // Find and set the product line by ID
+        ProductLine productLine = productLineRepository.findById(dto.getProductLineId())
+                .orElseThrow(() -> new EmptyResultDataAccessException("ProductLine not found with id: " + dto.getProductLineId(), 1));
         entity.setProductLine(productLine);
 
         entity.setProductScale(dto.getProductScale());

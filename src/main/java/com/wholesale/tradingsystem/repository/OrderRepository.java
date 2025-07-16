@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer> {
-    List<Order> findByCustomer_CustomerNumber(Integer customerNumber);
+public interface OrderRepository extends JpaRepository<Order, String> {
+    List<Order> findByCustomer_Id(String customerId);
     List<Order> findByStatus(String status);
     List<Order> findByOrderDateBetween(LocalDate startDate, LocalDate endDate);
 }

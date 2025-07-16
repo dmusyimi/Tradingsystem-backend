@@ -2,8 +2,9 @@ package com.wholesale.tradingsystem.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -25,10 +26,10 @@ import java.util.List;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Integer employeeNumber;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @NotBlank
     private String firstName;
@@ -47,14 +48,14 @@ public class Employee {
     private String jobTitle;
 
     @ManyToOne
-    @JoinColumn(name = "reportsTo")
+    @JoinColumn(name = "reportsToId")
     private Employee reportsTo;
 
     @OneToMany(mappedBy = "reportsTo")
     private List<Employee> subordinates = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "officeCode")
+    @JoinColumn(name = "officeId")
     private Office office;
 
     @OneToMany(mappedBy = "salesRepEmployee")

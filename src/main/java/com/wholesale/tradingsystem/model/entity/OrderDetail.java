@@ -2,8 +2,9 @@ package com.wholesale.tradingsystem.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,15 +24,17 @@ import java.math.BigDecimal;
 public class OrderDetail {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "orderNumber")
+    @JoinColumn(name = "orderId")
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "productCode")
+    @JoinColumn(name = "productId")
     private Product product;
 
     @NotNull
@@ -40,6 +43,5 @@ public class OrderDetail {
     @NotNull
     private BigDecimal priceEach;
 
-    @NotNull
-    private Integer orderLineNumber;
+
 }
