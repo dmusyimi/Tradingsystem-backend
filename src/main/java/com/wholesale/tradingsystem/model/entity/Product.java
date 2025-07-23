@@ -33,9 +33,6 @@ public class Product {
     private String id;
 
     @NotBlank
-    private String productCode;
-
-    @NotBlank
     private String productName;
 
     @ManyToOne

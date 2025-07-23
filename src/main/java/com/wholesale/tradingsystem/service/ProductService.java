@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,23 @@ public class ProductService {
 
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
+        // Log the incoming DTO for debugging
+        System.out.println("Creating product with DTO: " + productDTO);
+
+        // Validate required fields
+        if (productDTO.getProductName() == null || productDTO.getProductName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name cannot be null or empty");
+        }
+        if (productDTO.getQuantityInStock() == null || productDTO.getQuantityInStock() < 0) {
+            throw new IllegalArgumentException("Quantity in stock must be a non-negative number");
+        }
+        if (productDTO.getBuyPrice() == null || productDTO.getBuyPrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Buy price must be a non-negative number");
+        }
+        if (productDTO.getMsrp() == null || productDTO.getMsrp().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("MSRP must be a non-negative number");
+        }
+
         Product product = convertToEntity(productDTO);
         Product savedProduct = productRepository.save(product);
         return convertToDTO(savedProduct);
@@ -76,7 +94,6 @@ public class ProductService {
     private ProductDTO convertToDTO(Product product) {
         ProductDTO dto = new ProductDTO();
         dto.setId(product.getId());
-        dto.setProductCode(product.getProductCode());
         dto.setProductName(product.getProductName());
         dto.setProductLineId(product.getProductLine().getId());
         dto.setProductScale(product.getProductScale());
@@ -93,12 +110,15 @@ public class ProductService {
         if (dto.getId() != null) {
             entity.setId(dto.getId());
         }
-        entity.setProductCode(dto.getProductCode());
         entity.setProductName(dto.getProductName());
 
         // Find and set the product line by ID
+        if (dto.getProductLineId() == null || dto.getProductLineId().trim().isEmpty()) {
+            throw new IllegalArgumentException("ProductLine ID cannot be null or empty");
+        }
+
         ProductLine productLine = productLineRepository.findById(dto.getProductLineId())
-                .orElseThrow(() -> new EmptyResultDataAccessException("ProductLine not found with id: " + dto.getProductLineId(), 1));
+                .orElseThrow(() -> new EntityNotFoundException("ProductLine not found with id: " + dto.getProductLineId() + ". Available ProductLines: " + productLineRepository.count()));
         entity.setProductLine(productLine);
 
         entity.setProductScale(dto.getProductScale());
