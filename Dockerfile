@@ -20,7 +20,7 @@ RUN mvn package -DskipTests
 FROM openjdk:17-jdk-alpine
 
 # Create a non-root user and group
-RUN addgroup -S appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Set the working directory in the container
 WORKDIR /app
@@ -28,13 +28,11 @@ WORKDIR /app
 # Copy the built .war file from the builder stage
 COPY --from=builder /app/target/*.jar /app/Store.jar
 
-## Change ownership of application files
-#RUN chown -R appuser:appgroup /app && \
-#    mkdir -p /notifications/files && \
-#    chown -R appuser:appgroup /notifications/files
+# Change ownership of application files
+RUN chown -R appuser:appgroup /app
 
 # Switch to the non-root user
-#USER appuser
+USER appuser
 
 # Expose the port your application runs on
 EXPOSE 8080
