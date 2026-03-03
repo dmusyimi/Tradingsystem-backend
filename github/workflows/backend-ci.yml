@@ -1,4 +1,4 @@
-name: TradingSystem Backend CI
+name: TradingSystem Backend CI (Maven)
 
 on:
   push:
@@ -18,29 +18,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Java
-      - name: Set up Java 17
+      # 2️⃣ Set up Java 17
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-          cache: gradle
+          cache: maven
 
-      # 3️⃣ Make gradlew executable
-      - name: Grant execute permission
-        run: chmod +x gradlew
+      # 3️⃣ Build and run tests
+      - name: Build with Maven
+        run: mvn clean package
 
-      # 4️⃣ Clean & Build
-      - name: Build with Gradle
-        run: ./gradlew clean build
-
-      # 5️⃣ Create built folder & copy jar
+      # 4️⃣ Create built directory and copy JAR
       - name: Prepare Artifact
         run: |
           mkdir -p $BUILD_DIR
-          cp build/libs/*.jar $BUILD_DIR/
+          cp target/*.jar $BUILD_DIR/
 
-      # 6️⃣ Upload artifact
+      # 5️⃣ Upload JAR artifact
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
